@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>A small demo to explain how localStorage works</title>
+</head>
+<body>
+	<h1>A small demo to explain how localStorage works</h1>
+	<ul class="list"></ul>
+	<input type="text" class="input">
+	<input type="submit" class="submit">
+	<script>
+
+// 当window就绪的时候运行该函数，相当于程序入口
+window.onload = function () {
+
+	// 判断在localStorage中是否存在变量todo
+	if(localStorage.getItem('todo')){
+		// 存在则将内容转换为数组格式赋值给变量todo
+		var todo = JSON.parse(localStorage.getItem('todo'))
+	} else {
+		// 不存在则声明名为todo的空数组
+		var todo = []
+	}
+
+	// 下面的代码是使用了三目运算符，与上面的if-else等价，可以子啊自己的项目中尝试这种写法
+	// var todo = JSON.parse(localStorage.getItem('todo')) || []
+
+	// 将todo中的数据渲染到ul.list中
+	render(todo);
+
+	// 获取到提交按钮input.submit
+	var submitBtn = document.getElementsByClassName('submit')[0]
+
+	// 对获取到的提交按钮设置点击事件
+	submitBtn.onclick = function () {
+
+		// 获取input.input中输入的值
+		var newItem = document.getElementsByClassName('input')[0].value;
+		// 将获取到的值加入todo数组
+		todo.push(newItem)
+		// 将更新后的数组转换为JSON字符串后更新保存在localStorage中的todo
+		localStorage.setItem('todo', JSON.stringify(todo))
+		// 渲染
+		render(todo)
+		// 清空输入
+		document.getElementsByClassName('input')[0].value = ''
+	}
+
+}
+
+/**
+ * @func 渲染函数，负责将数组格式的数据渲染到ul.ist中
+ * @param {array} array - 该参数为需要渲染在ul.list中的数组，也就是构成list的数据
+ */
+function render (array) {
+	// 获取需要的列表 ul.list
+	var list = document.getElementsByClassName('list')[0]
+	// 将列表已有的内容清空，方便之后插入数据
+	list.innerHTML = ''
+	// 通过对输入的array进行循环，将数组中的数据以
+	// <li><span>{data}</span><button>删除</button></li>
+	// 这样的格式插入到ul.list
+	for(var i = 0; i < array.length; i++) {
+		list.innerHTML += '<li><span>' + array[i] + '</span><button>删除</button></li>';
+	}
+
+	// 获取每一个li元素的删除按钮
+	var deleteBtns = document.getElementsByTagName('button')
+	// 通过循环这些删除按钮，为每一个按钮加入删除对应数据的功能
+	for (var i = 0; i < deleteBtns.length; i++) {
+		// 在这里用到了立即执行函数表达式（IIFE）保证函数作用域中i的对应
+		// 相关内容可以自行查阅关于JS中函数作用域，闭包之类的内容
+		(function(i, todo){
+			// 为各个删除按钮加上点击事件处理删除功能
+			deleteBtns[i].onclick = function(){
+				// 删除todo中的第i个元素
+				todo.splice(i, 1);
+				// 渲染并重新设定localStorage中保存的todo
+				render(todo);
+				localStorage.setItem('todo', JSON.stringify(todo))
+			}
+		})(i, array)
+	}
+}
+	</script>
+</body>
+</html>
