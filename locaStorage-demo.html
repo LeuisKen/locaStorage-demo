@@ -31,20 +31,32 @@ window.onload = function () {
 
 	// 获取到提交按钮input.submit
 	var submitBtn = document.getElementsByClassName('submit')[0]
+	var inputArea = document.getElementsByClassName('input')[0]
 
 	// 对获取到的提交按钮设置点击事件
 	submitBtn.onclick = function () {
 
 		// 获取input.input中输入的值
 		var newItem = document.getElementsByClassName('input')[0].value;
-		// 将获取到的值加入todo数组
-		todo.push(newItem)
-		// 将更新后的数组转换为JSON字符串后更新保存在localStorage中的todo
-		localStorage.setItem('todo', JSON.stringify(todo))
-		// 渲染
-		render(todo)
+
+		if( newItem !== '' ) {
+			// 将获取到的值加入todo数组
+			todo.push(newItem)
+			// 将更新后的数组转换为JSON字符串后更新保存在localStorage中的todo
+			localStorage.setItem('todo', JSON.stringify(todo))
+			// 渲染
+			render(todo)
+		}
 		// 清空输入
-		document.getElementsByClassName('input')[0].value = ''
+		inputArea.value = ''
+		inputArea.focus();
+	}
+
+	inputArea.onkeydown = function(e){
+		var e = e || window.event
+		if (event.keyCode == "13") {
+			submitBtn.click()
+		}
 	}
 
 }
